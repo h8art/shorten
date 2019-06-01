@@ -5,38 +5,32 @@ import (
 	"fmt"
 )
 
+type MyShortener struct {
+	storage map[string]string
+}
+
 type Shortener interface {
 	Shorten(string) string
 	Resolve(string) string
 }
 
-var urls []url
-
-type url struct {
-	hex  string
-	full string
+func (s MyShortener) Shorten(url string) string {
+	src := []byte(url)
+	s.storage[hex.EncodeToString(src)] = url
+	return hex.EncodeToString(src)
 }
 
-func Shorten(s string) string {
-	var tempUrl url
-	src := []byte(s)
-	tempUrl.hex = hex.EncodeToString(src)
-	tempUrl.full = s
-	urls = append(urls, tempUrl)
-	return tempUrl.hex
-}
-
-func Resolve(s string) string {
-	for _, n := range urls {
-		if n.hex == s {
-			return n.full
-		}
-	}
-	return ""
+func (s MyShortener) Resolve(url string) string {
+	return s.storage[url]
 }
 
 func convert(u string) {
-	uHex := Shorten(u)
-	fmt.Println(uHex)
-	fmt.Println(Resolve(uHex))
+	tempUrls := new(MyShortener)
+	tempUrls.storage = make(map[string]string)
+
+	urlShorten := Shortener.Shorten(tempUrls, u)
+	fmt.Println(urlShorten)
+
+	urlResoled := Shortener.Resolve(tempUrls, urlShorten)
+	fmt.Println(urlResoled)
 }
